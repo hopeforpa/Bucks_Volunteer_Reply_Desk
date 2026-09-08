@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bucks Volunteer Reply Desk</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  /* palette sampled from the Hope for PA mark */
+  --sky:#69C4EF; --blue:#1888B6; --deep:#186E95; --navy:#0F3F55; --ink:#040707;
+  --purple:#6425c9; --purple-dark:#4c1d95;
+  --line:#d9e7ef; --muted:#5b7583; --card:#ffffff;
+}
+body{margin:0;color:var(--ink);
+  font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:linear-gradient(160deg,#eaf6fd 0%,#f4fafd 42%,#eef4f8 100%);background-attachment:fixed}
+header{display:flex;align-items:center;gap:20px;padding:14px 24px;
+  background:linear-gradient(90deg,#0B3145 0%,var(--navy) 45%,var(--deep) 100%);
+  border-bottom:3px solid var(--sky);position:sticky;top:0;z-index:10}
+.brandmark{background:white;border-radius:12px;padding:7px 14px;display:flex;align-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.22)}
+.brandmark img{height:46px;width:auto;display:block}
+header h1{margin:0;font-size:30px;line-height:1.05;color:white;letter-spacing:-.02em;font-weight:900;
+  text-shadow:0 2px 4px rgba(0,0,0,.3)}
+header .subtitle{margin-top:3px;color:#9fd8f2;font-size:15px;font-weight:700;letter-spacing:.04em}
+.seg{display:flex;gap:8px;margin-left:auto}
+.seg button{border:1px solid rgba(255,255,255,.6);background:rgba(255,255,255,.14);color:white;
+  font:inherit;font-weight:700;font-size:14px;padding:8px 16px;border-radius:999px;cursor:pointer}
+.seg button:hover{background:rgba(255,255,255,.2)}
+.seg button.on{background:var(--sky);border-color:var(--sky);color:var(--navy)}
+.wrap{display:grid;grid-template-columns:var(--split,1fr) 10px 1fr;height:calc(100vh - 92px)}
+.wrap.collapsed{grid-template-columns:0 10px 1fr}
+.wrap.collapsed .pane.left{padding:0;border-right:0;overflow:hidden;visibility:hidden}
+.divider{background:linear-gradient(180deg,var(--sky),var(--blue));cursor:col-resize;
+  position:relative;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.divider::after{content:"";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:2px;height:34px;background:rgba(255,255,255,.85);border-radius:2px}
+.divider:hover{filter:brightness(1.12)}
+body.dragging{cursor:col-resize;user-select:none}
+.pane{overflow-y:auto;overflow-x:hidden;min-width:0;padding:20px 24px 60px}
+.pane.left{border-right:1px solid var(--line);background:rgba(255,255,255,.35)}
+.ptitle{margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--deep);font-weight:800}
+.hint{margin:0 0 16px;font-size:13px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px;
+  box-shadow:0 1px 2px rgba(15,63,85,.06)}
+.card.ref{border-left:5px solid var(--blue)}
+.reflabel{font-size:17px;font-weight:900;color:var(--navy);letter-spacing:-.01em}
+.forref{font-size:12px;font-weight:600;color:var(--muted);letter-spacing:0}
+.refsub{margin-top:2px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--blue)}
+.card.reply{border-left:5px solid var(--purple)}
+.card.reply h3{margin:0;font-size:15px;color:var(--purple-dark)}
+pre{margin:10px 0 0;white-space:pre-wrap;word-wrap:break-word;
+  font-family:inherit;font-size:15px;line-height:1.5;color:#22333d}
+.tagbar{position:sticky;top:0;z-index:5;margin:-20px -24px 16px;padding:12px 24px;
+  background:linear-gradient(180deg,#d7eefa 0%,#c9e7f7 100%);
+  border-bottom:2px solid var(--blue);box-shadow:0 2px 6px rgba(15,63,85,.10)}
+.tagbar .tlabel{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--navy);margin-bottom:8px}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{border:1px solid var(--deep);background:white;color:var(--navy);font:inherit;font-weight:700;
+  font-size:13px;padding:6px 13px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.tag:hover{background:var(--navy);border-color:var(--navy);color:white}
+.tag.done{background:#20a36b;border-color:#20a36b;color:white}
+.rhead{display:flex;align-items:center;gap:12px}
+.rhead h3{flex:1}
+.copy{border:0;background:var(--purple);color:white;font:inherit;font-weight:800;font-size:13px;
+  padding:7px 16px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.copy:hover{background:var(--purple-dark)}
+.copy.done{background:#20a36b}
+h2.rgroup{margin:22px 0 10px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--purple);font-weight:800}
+h2.rgroup:first-of-type{margin-top:0}
+footer{padding:12px 24px;color:#eaf6fd;font-size:12px;background:var(--navy)}
+@media (max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.divider{display:none}
+  .pane.left{border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brandmark"><img src="data:image/png;base64,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" alt="HOPE for PA"></div>
+  <div><h1>Volunteer Reply Desk</h1><div class="subtitle">Bucks County &middot; 2026</div></div>
+  <div class="seg">
+    <button id="bm" class="on">New Movers</button>
+    <button id="bc">Gospel / Fox / Conservative</button>
+    <button id="bh" title="Show replies only">Hide Text References</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <section class="pane left">
+    <div class="ptitle">What we sent</div>
+    <p class="hint">These go out from InField Pro with the recipient's name merged in. Nothing here needs copying.</p>
+    <div id="movers"><article class="card ref"><div class="reflabel">New Movers Text 1A <span class="forref">(for your reference)</span></div><div class="refsub">Friendly Neighbor</div><pre>Hi (insert resident&#x27;s name), your voter registration doesn&#x27;t follow you when you move.
+
+I&#x27;m Vincent, a Bucks County volunteer. Registering to vote at your new address is fast and easy, about 3 minutes, faster than finding a movie on Netflix :)
+
+It&#x27;s how you back local common-sense conservative values.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">New Movers Text 1B <span class="forref">(for your reference)</span></div><div class="refsub">Transparent Authority</div><pre>Hi (insert resident&#x27;s name), the official voter registration records show you&#x27;re not registered to vote at your current Bucks address.
+
+I&#x27;m Vincent, a Bucks County volunteer. Fixing it is fast and easy, about 3 minutes, and it&#x27;s how you back common-sense conservative values here.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">New Movers Text 2 <span class="forref">(for your reference)</span></div><div class="refsub">Gentle Follow-Up</div><pre>Hi (insert resident&#x27;s name), guess what?!!! Your voter registration stayed behind in the state you left.
+
+Registering to vote in PA is fast and easy, 2-3 minutes, then you can vote in Nov and help common-sense conservatives get elected in Bucks.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">New Movers Text 3 <span class="forref">(for your reference)</span></div><div class="refsub">Community Reminder</div><pre>Hi (insert resident&#x27;s name), your property tax rate, school board and township budget are all decided right here in Bucks.
+
+Your old state registration doesn&#x27;t reach any of it. Registering to vote here is fast and easy, 2-3 minutes, and it&#x27;s how common-sense conservative folks get elected.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">New Movers Text 4 <span class="forref">(for your reference)</span></div><div class="refsub">Have You Heard?</div><pre>Hi (insert resident&#x27;s name), no county office, no line, no appointment.
+
+You can register to vote right from your couch, it&#x27;s fast and easy, 2-3 minutes, and then you can vote in Nov for common-sense conservative folks here in Bucks.
+
+Deadline to register is October 19th so it&#x27;s best not to wait.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">New Movers Text 5 <span class="forref">(for your reference)</span></div><div class="refsub">Final Reminder</div><pre>Hi (insert resident&#x27;s name), last note from me. October 19th is the deadline to register.
+
+You moved to Bucks but your registration stayed behind, and without registering to vote here you won&#x27;t have a say in who runs things in November. It&#x27;s fast and easy online, 2-3 minutes, and it&#x27;s how common-sense conservatives get elected in your town.
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vin
+Bucks Volunteer at Hope for PA</pre></article></div>
+    <div id="cable" style="display:none"><article class="card ref"><div class="reflabel">Gospel Text 1A <span class="forref">(for your reference)</span></div><div class="refsub">Local Urgent</div><pre>Hi (insert resident&#x27;s name), if you&#x27;re worried about prices, the border and safe Bucks streets, you and I agree!
+
+I&#x27;m Vincent, a Bucks volunteer. One thing, if you&#x27;re not registered to vote yet you can&#x27;t help common-sense conservative candidates get elected here in Nov.
+
+It&#x27;s fast and easy only takes 2-3 minutes online!
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">Gospel Text 1B <span class="forref">(for your reference)</span></div><div class="refsub">National Urgent</div><pre>Hi (insert resident&#x27;s name), Coming soon to Bucks County PA?
+
+The Democratic Socialists of America published their 2026 platform, and their co-chair confirmed the rest on TV:
+
+* abolish the police and prison system
+* eventually end national borders
+* abolish the U.S. Senate
+
+I&#x27;m Vincent, a Bucks volunteer. If you want common-sense conservatives elected in your town in Nov being registered to vote is step 1. It&#x27;s fast and easy only takes 2-3 minutes online!
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">Gospel Text 2 <span class="forref">(for your reference)</span></div><div class="refsub">My Vote Matters</div><pre>Hi (insert resident&#x27;s name), a presidential race is decided by millions of votes but some local state races have been won by as few as 76 votes!
+
+That&#x27;s the one place your vote is worth more, and it&#x27;s the one place most people skip. Bucks races will be decided by residents who vote in Nov.
+
+If you want common-sense conservatives running things here, register to vote soon. It&#x27;s fast and easy only takes 2-3 minutes online!
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">Gospel Text 3 <span class="forref">(for your reference)</span></div><div class="refsub">Government Overreach</div><pre>Hi (insert resident&#x27;s name), who can forget the mask mandates and the Covid shutdowns?
+
+Governor Shapiro&#x27;s Health Department has recently proposed 500 pages of new rules, Regulation 10-242. Pennsylvanians voted in 2021 to limit a governor&#x27;s emergency powers. This proposal goes around that limit and allows for more overreach.
+
+Our PA Governor is on the ballot November 3rd. We need common-sense conservatives making these emergency decisions, register to vote here in Bucks ... only takes 2-3 minutes online!
+
+Want me to text you the official PA Gov registration link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">Gospel Text 4 <span class="forref">(for your reference)</span></div><div class="refsub">Protect Our Girls</div><pre>Hi (insert resident&#x27;s name), a bill to keep boys out of girls&#x27; sports passed the state Senate in May 2025.
+
+Over 1,000 days later the liberal House leadership still won&#x27;t allow a floor vote. Four committees, no vote.
+
+Every state House seat is on the ballot in November, including the ones here in Bucks. If you want common-sense conservatives in Harrisburg, register to vote. It&#x27;s fast and easy only takes 2-3 minutes online!
+
+Happy to send you a paper application and a stamped envelope upon request or do you want me to text you the official PA Gov link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card ref"><div class="reflabel">Gospel Text 5 <span class="forref">(for your reference)</span></div><div class="refsub">Time is Running Out</div><pre>Hi (insert resident&#x27;s name), Vincent here, a Bucks County volunteer, and this one is time-sensitive.
+
+The gains conservatives have secured under President Trump are real. Record high stock market, the lowest murder rate since 1955, border crossings at their lowest since 1970.
+
+The only way to protect them is to register to vote and the Oct 19 deadline is close. If you want common-sense conservatives elected here in Bucks on Nov 3rd, this is the step. It&#x27;s fast and easy only takes 2-3 minutes online!
+
+Want me to text you the official PA Gov link?
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article></div>
+  </section>
+  <div class="divider" id="divider" title="Drag to resize. Double-click to hide or show the text references."></div>
+  <section class="pane right">
+    <div class="tagbar">
+      <div class="tlabel">Tags &middot; click to copy</div>
+      <div class="tags"><button class="tag" data-tag="HFP_SentLink">HFP_SentLink</button><button class="tag" data-tag="HFP_Registered">HFP_Registered</button><button class="tag" data-tag="HFP_Mail_App">HFP_Mail_App</button><button class="tag" data-tag="HFP_Supporter">HFP_Supporter</button><button class="tag" data-tag="HFP_OptOut">HFP_OptOut</button></div>
+    </div>
+    <div class="ptitle">What to send back</div>
+    <p class="hint">Find what they said, hit Copy, paste into InField Pro. Edit before sending if it needs it.</p>
+    <h2 class="rgroup">They said yes</h2>
+<article class="card reply"><div class="rhead"><h3>Send Registration Link</h3><button class="copy" data-k="r1">Copy</button></div><pre id="t-r1">Great, so glad you are ready to register to vote!
+
+This is Pennsylvania&#x27;s official voter registration website:
+https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
+
+It&#x27;s the state&#x27;s secure system and only takes 2-3 minutes. Every new registration is one more common-sense conservative voice here in Bucks.
+
+Any questions while you&#x27;re doing it, just ask and I&#x27;ll help.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<h2 class="rgroup">They want paper via snail mail</h2>
+<article class="card reply"><div class="rhead"><h3>Snail-Mail: Send Paper Application</h3><button class="copy" data-k="r9">Copy</button></div><pre id="t-r9">i&#x27;d be happy to mail you a Pennsylvania voter registration application.
+just reply with the mailing address where you&#x27;d like me to send it, and i&#x27;ll include a postage-paid, pre-addressed return envelope to make it easy.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Snail-Mail: Address Received</h3><button class="copy" data-k="r10">Copy</button></div><pre id="t-r10">thanks. your voter registration application and postage-paid, pre-addressed return envelope are on the way.
+if you have any questions while completing the application, just reply to this message. i&#x27;m happy to help.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Snail-Mail: Follow-Up</h3><button class="copy" data-k="r13">Copy</button></div><pre id="t-r13">just following up on the voter registration application i mailed you. did it arrive okay?
+if you have it, the last step is to fill it out and drop it back in the mail using the postage-paid envelope i included. the county needs to receive it before the october 19th deadline, so it&#x27;s best not to wait.
+if you have any questions or it didn&#x27;t arrive, just reply here and i&#x27;m happy to help.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<h2 class="rgroup">They are already set</h2>
+<article class="card reply"><div class="rhead"><h3>Already Registered</h3><button class="copy" data-k="r2">Copy</button></div><pre id="t-r2">great, thanks for letting me know. i appreciate you being registered and taking part in the community.
+if you ever have any questions about voting, or you&#x27;d like a free common-sense voting guide before the november 3rd election, just reply here and i&#x27;d be happy to help. have a good day.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<h2 class="rgroup">They are asking about you</h2>
+<article class="card reply"><div class="rhead"><h3>Who Are You?</h3><button class="copy" data-k="r4">Copy</button></div><pre id="t-r4">thanks for asking. i&#x27;m Vincent, a volunteer with Hope for PA. i&#x27;m reaching out to help people in Pennsylvania get registered to vote.
+if you&#x27;re not currently registered, you can register here:
+https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>How Did You Get My Number?</h3><button class="copy" data-k="r5">Copy</button></div><pre id="t-r5">thanks for asking. i use publicly available voter registration records together with commercially available contact information to reach people who may not currently be registered.
+if you&#x27;re interested in registering, you can do that here:
+https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
+if you&#x27;d rather not receive another text from me, just reply STOP.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Is This Official?</h3><button class="copy" data-k="r6">Copy</button></div><pre id="t-r6">yes, this link takes you to Pennsylvania&#x27;s official voter registration website:
+https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
+hope that helps.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<h2 class="rgroup">No reply yet</h2>
+<article class="card reply"><div class="rhead"><h3>Follow-Up: Did You Finish?</h3><button class="copy" data-k="r8">Copy</button></div><pre id="t-r8">just checking back... were you able to complete your voter registration?
+here&#x27;s the official Pennsylvania registration link again:
+https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
+if you ran into any trouble, just reply here. i&#x27;m happy to help.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<h2 class="rgroup">They are done</h2>
+<article class="card reply"><div class="rhead"><h3>Not Interested</h3><button class="copy" data-k="r3">Copy</button></div><pre id="t-r3">no problem at all. thanks for taking a moment to reply. have a good day.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Wrong Person</h3><button class="copy" data-k="r11">Copy</button></div><pre id="t-r11">thanks for letting me know. sorry about the mistake. i&#x27;ll update my records. have a good day.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Opt Out</h3><button class="copy" data-k="r7">Copy</button></div><pre id="t-r7">absolutely. i&#x27;ll remove you from future messages. thanks for letting me know.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+<article class="card reply"><div class="rhead"><h3>Angry Reply</h3><button class="copy" data-k="r12">Copy</button></div><pre id="t-r12">i understand, and i&#x27;m sorry for the interruption. i&#x27;ll remove you from future messages. thanks for letting me know.
+
+Vince
+Bucks Volunteer at Hope for PA</pre></article>
+  </section>
+</div>
+
+<script>
+const bm=document.getElementById("bm"), bc=document.getElementById("bc");
+const mv=document.getElementById("movers"), cb=document.getElementById("cable");
+function seg(isMovers){
+  mv.style.display=isMovers?"":"none";
+  cb.style.display=isMovers?"none":"";
+  bm.classList.toggle("on",isMovers);
+  bc.classList.toggle("on",!isMovers);
+  document.querySelector(".pane.left").scrollTop=0;
+}
+bm.addEventListener("click",()=>seg(true));
+bc.addEventListener("click",()=>seg(false));
+// resizable divider
+const wrap=document.querySelector(".wrap"), divider=document.getElementById("divider"),
+      bh=document.getElementById("bh");
+let dragging=false;
+function setSplit(px){
+  const min=0, max=wrap.clientWidth-260;
+  let v=Math.max(min,Math.min(px,max));
+  if(v<200) v=0;                    // snap closed instead of leaving a crushed column
+  wrap.style.setProperty("--split", v+"px");
+  wrap.classList.toggle("collapsed", v===0);
+  bh.textContent = v===0 ? "Show Text References" : "Hide Text References";
+}
+divider.addEventListener("mousedown",e=>{dragging=true;document.body.classList.add("dragging");e.preventDefault();});
+window.addEventListener("mousemove",e=>{ if(dragging) setSplit(e.clientX - wrap.getBoundingClientRect().left); });
+window.addEventListener("mouseup",()=>{dragging=false;document.body.classList.remove("dragging");});
+divider.addEventListener("dblclick",()=>{
+  const cur=parseInt(getComputedStyle(wrap).gridTemplateColumns) || 0;
+  setSplit(cur<40 ? Math.round(wrap.clientWidth/2) : 0);
+});
+bh.addEventListener("click",()=>{
+  const cur=parseInt(getComputedStyle(wrap).gridTemplateColumns) || 0;
+  setSplit(cur<40 ? Math.round(wrap.clientWidth/2) : 0);
+});
+
+document.querySelectorAll(".tag").forEach(b=>{
+  b.addEventListener("click",async()=>{
+    const t=b.dataset.tag;
+    try{ await navigator.clipboard.writeText(t); }
+    catch(e){ const ta=document.createElement("textarea"); ta.value=t;
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    const was=b.textContent; b.textContent="Copied"; b.classList.add("done");
+    setTimeout(()=>{b.textContent=was;b.classList.remove("done");},1100);
+  });
+});
+
+document.querySelectorAll(".copy").forEach(b=>{
+  b.addEventListener("click",async()=>{
+    const txt=document.getElementById("t-"+b.dataset.k).textContent;
+    try{ await navigator.clipboard.writeText(txt); }
+    catch(e){ const ta=document.createElement("textarea"); ta.value=txt;
+      document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+    const was=b.textContent; b.textContent="Copied"; b.classList.add("done");
+    setTimeout(()=>{b.textContent=was;b.classList.remove("done");},1400);
+  });
+});
+</script>
+
+<footer>Bucks Volunteer Reply Desk &middot; v8 &middot; September 7, 2026 &middot; Built with Claude</footer>
+</body>
+</html>
+<!-- Bucks Volunteer Reply Desk . v8 . September 7, 2026 . Built with Claude -->
