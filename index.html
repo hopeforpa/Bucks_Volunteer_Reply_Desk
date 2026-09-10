@@ -76,6 +76,28 @@ h2.rgroup{margin:22px 0 10px;font-size:13px;letter-spacing:.06em;text-transform:
   color:var(--purple);font-weight:800}
 h2.rgroup:first-of-type{margin-top:0}
 footer{padding:12px 24px;color:#eaf6fd;font-size:12px;background:var(--navy)}
+@media print{
+  @page{margin:14mm}
+  header,.seg,.divider,.pane.left,.tagbar .tlabel,.copy,.hint{display:none !important}
+  body{background:white !important;font-size:11pt}
+  .wrap{display:block !important;height:auto !important}
+  .pane.right{overflow:visible !important;padding:0 !important}
+  .printhead{display:block !important;margin:0 0 10pt;padding-bottom:6pt;border-bottom:2pt solid #186E95}
+  .printhead h2{margin:0;font-size:16pt;color:#0F3F55}
+  .printhead .ph2{font-size:9pt;color:#5b7583;margin-top:2pt}
+  .tagbar{position:static !important;margin:0 0 10pt !important;padding:6pt 8pt !important;
+    background:#eaf6fd !important;border:1pt solid #186E95;box-shadow:none !important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .tag{border:1pt solid #186E95 !important;padding:2pt 6pt !important;font-size:9pt !important}
+  .ptitle{font-size:10pt;margin:0 0 6pt}
+  h2.rgroup{font-size:10pt;margin:10pt 0 4pt;page-break-after:avoid;color:#4c1d95}
+  .card.reply{border:1pt solid #cbd5e1 !important;border-left:3pt solid #6425c9 !important;
+    box-shadow:none !important;page-break-inside:avoid;margin-bottom:7pt;padding:7pt 9pt}
+  .card.reply h3{font-size:11pt}
+  pre{font-size:10pt;margin-top:5pt}
+}
+.printhead{display:none}
+
 @media (max-width:900px){.wrap{grid-template-columns:1fr;height:auto}.divider{display:none}
   .pane.left{border-right:0;border-bottom:1px solid var(--line)}}
 </style>
@@ -89,6 +111,7 @@ footer{padding:12px 24px;color:#eaf6fd;font-size:12px;background:var(--navy)}
     <button id="bm" class="on">New Movers</button>
     <button id="bc">Gospel / Fox / Conservative</button>
     <button id="bh" title="Show replies only">Hide Text References</button>
+    <button id="bp" title="Download the replies as a PDF">Download Replies PDF</button>
   </div>
 </header>
 
@@ -219,17 +242,17 @@ Bucks Volunteer at Hope for PA</pre></article></div>
       <div class="tlabel">Tags &middot; click to copy</div>
       <div class="tags"><button class="tag" data-tag="HFP_SentLink">HFP_SentLink</button><button class="tag" data-tag="HFP_Registered">HFP_Registered</button><button class="tag" data-tag="HFP_Mail_App">HFP_Mail_App</button><button class="tag" data-tag="HFP_Supporter">HFP_Supporter</button><button class="tag" data-tag="HFP_OptOut">HFP_OptOut</button></div>
     </div>
+    <div class="printhead"><h2>Bucks Volunteer Reply Desk</h2>
+      <div class="ph2">Hope for PA &middot; reply scripts &middot; v18, September 10 2026</div></div>
     <div class="ptitle">What to send back</div>
     <p class="hint">Find what they said, hit Copy, paste into InField Pro. Edit before sending if it needs it.</p>
     <h2 class="rgroup">They said yes</h2>
 <article class="card reply"><div class="rhead"><h3>Send Registration Link</h3><button class="copy" data-k="r1">Copy</button></div><pre id="t-r1">Great, so glad you are ready to register to vote!
 
-This is Pennsylvania&#x27;s official voter registration website:
+Pennsylvania&#x27;s official registration website:
 https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
 
-It&#x27;s the state&#x27;s secure system and only takes 2-3 minutes. Every new registration is one more common-sense conservative voice here in Bucks.
-
-Any questions while you&#x27;re doing it, just ask and I&#x27;ll help.
+Takes only 2-3 minutes, and Bucks gets one more common-sense conservative voice!
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
@@ -245,28 +268,27 @@ if you have any questions while completing the application, just reply to this m
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
 <article class="card reply"><div class="rhead"><h3>Snail-Mail: Follow-Up</h3><button class="copy" data-k="r13">Copy</button></div><pre id="t-r13">just following up on the voter registration application i mailed you. did it arrive okay?
-if you have it, the last step is to fill it out and drop it back in the mail using the postage-paid envelope i included. the county needs to receive it before the october 19th deadline, so it&#x27;s best not to wait.
-if you have any questions or it didn&#x27;t arrive, just reply here and i&#x27;m happy to help.
+the last step is to fill it out and drop it back in the postage-paid envelope. the county needs it before the october 19th deadline.
+any questions, just reply here.
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
 <h2 class="rgroup">They are already set</h2>
-<article class="card reply"><div class="rhead"><h3>Already Registered</h3><button class="copy" data-k="r2">Copy</button></div><pre id="t-r2">great, thanks for letting me know. i appreciate you being registered and taking part in the community.
-if you ever have any questions about voting, or you&#x27;d like a free common-sense voting guide before the november 3rd election, just reply here and i&#x27;d be happy to help. have a good day.
+<article class="card reply"><div class="rhead"><h3>Already Registered</h3><button class="copy" data-k="r2">Copy</button></div><pre id="t-r2">great, thanks for letting me know, and thanks for being registered.
+if you&#x27;d like a free common-sense voting guide before the november 3rd election, just reply here. have a good day.
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
 <h2 class="rgroup">They are asking about you</h2>
-<article class="card reply"><div class="rhead"><h3>Who Are You?</h3><button class="copy" data-k="r4">Copy</button></div><pre id="t-r4">thanks for asking. i&#x27;m Vincent, a volunteer with Hope for PA. i&#x27;m reaching out to help people in Pennsylvania get registered to vote.
-if you&#x27;re not currently registered, you can register here:
+<article class="card reply"><div class="rhead"><h3>Who Are You?</h3><button class="copy" data-k="r4">Copy</button></div><pre id="t-r4">thanks for asking. i&#x27;m Vincent, a volunteer with Hope for PA, reaching out to help folks get registered to vote.
+if you&#x27;re not registered yet, you can do it here:
 https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
-<article class="card reply"><div class="rhead"><h3>How Did You Get My Number?</h3><button class="copy" data-k="r5">Copy</button></div><pre id="t-r5">thanks for asking. i use publicly available voter registration records together with commercially available contact information to reach people who may not currently be registered.
-if you&#x27;re interested in registering, you can do that here:
+<article class="card reply"><div class="rhead"><h3>How Did You Get My Number?</h3><button class="copy" data-k="r5">Copy</button></div><pre id="t-r5">thanks for asking. i use public voter registration records and commercial contact info to reach people who may not be registered.
+if you&#x27;d like to register:
 https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
-if you&#x27;d rather not receive another text from me, just reply STOP.
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
@@ -278,9 +300,9 @@ Vince
 Bucks Volunteer at Hope for PA</pre></article>
 <h2 class="rgroup">No reply yet</h2>
 <article class="card reply"><div class="rhead"><h3>Follow-Up: Did You Finish?</h3><button class="copy" data-k="r8">Copy</button></div><pre id="t-r8">just checking back... were you able to complete your voter registration?
-here&#x27;s the official Pennsylvania registration link again:
+here&#x27;s the official Pennsylvania link again:
 https://www.pavoterservices.pa.gov/Pages/VoterRegistrationApplication.aspx
-if you ran into any trouble, just reply here. i&#x27;m happy to help.
+if you ran into any trouble, just reply here.
 
 Vince
 Bucks Volunteer at Hope for PA</pre></article>
@@ -341,6 +363,8 @@ bh.addEventListener("click",()=>{
 });
 
 // click a thumbnail to enlarge it in place
+document.getElementById("bp").addEventListener("click",()=>window.print());
+
 document.querySelectorAll(".thumb").forEach(i=>{
   i.addEventListener("click",()=>{
     i.classList.toggle("big");
@@ -371,7 +395,7 @@ document.querySelectorAll(".copy").forEach(b=>{
 });
 </script>
 
-<footer>Bucks Volunteer Reply Desk &middot; v11 &middot; September 8, 2026 &middot; Built with Claude</footer>
+<footer>Bucks Volunteer Reply Desk &middot; v18 &middot; September 10, 2026 &middot; Built with Claude</footer>
 </body>
 </html>
-<!-- Bucks Volunteer Reply Desk . v11 . September 8, 2026 . Built with Claude -->
+<!-- Bucks Volunteer Reply Desk . v18 . September 10, 2026 . Built with Claude -->
